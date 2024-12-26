@@ -1,6 +1,3 @@
-// 곡 길이 설정 (초 단위)
-const SONG_DURATION = 50; // 45초로 설정
-
 let score = 0;
 let beat = 0;
 let hp = 100; // Add HP variable
@@ -110,11 +107,6 @@ function goToFinish(reason = "CLEAR!") {
   });
   window.location.href = `finish.html?${params.toString()}`;
 }
-
-// 곡 종료 타이머 설정
-setTimeout(() => {
-  goToFinish();
-}, SONG_DURATION * 1000);
 
 function showJudgment(type, arrowElement) {
   const judgment = document.createElement("div");
@@ -297,11 +289,11 @@ window.addEventListener("beforeunload", () => {
 
 // Key mapping
 const keyMap = {
-  ArrowLeft: "ul",
-  ArrowDown: "dl",
-  " ": "center", // Space key
-  ArrowUp: "ur",
-  ArrowRight: "dr",
+  7: "ul",
+  1: "dl",
+  5: "center", // Space key
+  9: "ur",
+  3: "dr",
 };
 
 // Add keyboard event listener - 이전 버전으로 복원
@@ -477,6 +469,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
       }, seconds * 1000);
     });
+
+    // 곡 종료 타이머를 songData.duration으로 설정
+    setTimeout(() => {
+      goToFinish();
+    }, songData.duration * 1000 + 5000);
   } catch (error) {
     console.error("Error loading song data:", error);
     alert("Error loading song data. Returning to song selection.");
