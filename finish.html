@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Finished</title>
+    <style>
+      body {
+        background: black;
+        color: white;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .result {
+        text-align: center;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+      .score {
+        font-size: 48px;
+        color: #00ff00;
+      }
+      .combo {
+        font-size: 36px;
+        color: #ff00ff;
+      }
+      .reason {
+        font-size: 24px;
+        color: #ffff00;
+        margin: 20px 0;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 18px;
+        margin: 10px;
+        cursor: pointer;
+        background: #333;
+        color: white;
+        border: 1px solid #666;
+        border-radius: 5px;
+      }
+      button:hover {
+        background: #444;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="result">
+      <h1 id="reason"></h1>
+      <div class="score">Final Score <span id="finalScore">0</span></div>
+      <div class="combo">Max Combo <span id="maxCombo">0</span></div>
+      <div class="combo">PERFECT × <span id="PERFECT">0</span></div>
+
+      <div class="combo">GREAT × <span id="GREAT">0</span></div>
+      <div class="combo">GOOD × <span id="GOOD">0</span></div>
+      <div class="combo">BAD × <span id="BAD">0</span></div>
+      <div class="combo">MISS × <span id="MISS">0</span></div>
+      <button onclick="location.href='game.html'">Try Again</button>
+      <button onclick="location.href='index.html'">Back to Menu</button>
+    </div>
+
+    <script>
+      // Get URL parameters
+      const params = new URLSearchParams(window.location.search);
+      document.getElementById("finalScore").textContent =
+        params.get("score") || 0;
+      document.getElementById("maxCombo").textContent =
+        params.get("combo") || 0;
+
+      document.getElementById("PERFECT").textContent =
+        params.get("perfect") || 0;
+      document.getElementById("GREAT").textContent = params.get("great") || 0;
+      document.getElementById("GOOD").textContent = params.get("good") || 0;
+      document.getElementById("BAD").textContent = params.get("bad") || 0;
+      document.getElementById("MISS").textContent = params.get("miss") || 0;
+
+      document.getElementById("reason").textContent =
+        params.get("reason") || "Game Finished";
+    </script>
+  </body>
+</html>

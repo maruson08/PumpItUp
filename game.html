@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="game.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+      integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <iframe
+      id="myVideo"
+      src="#"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+    <gameContainer>
+      <infoBar>
+        <p id="difficulty">Difficulty: MEDIUM</p>
+        <p id="score">0</p>
+        <p id="combo">COMBO: 0</p>
+        <div class="hp-container">
+          <div id="hp-bar"></div>
+          <span id="HP">100</span>
+        </div>
+      </infoBar>
+      <arrows>
+        <div></div>
+        <div id="dl">
+          <img class="marker" src="/Assets/DL.png" width="70%" alt="" />
+        </div>
+        <div id="ul">
+          <img class="marker" src="/Assets/UL.png" width="70%" alt="" />
+        </div>
+        <div id="center">
+          <img class="marker" src="/Assets/Center.png" width="70%" alt="" />
+        </div>
+        <div id="ur">
+          <img class="marker" src="/Assets/UR.png" width="70%" alt="" />
+        </div>
+        <div id="dr">
+          <img class="marker" src="/Assets/DR.png" width="70%" alt="" />
+        </div>
+        <div></div>
+      </arrows>
+    </gameContainer>
+  </body>
+  <script src="game.js"></script>
+</html>
