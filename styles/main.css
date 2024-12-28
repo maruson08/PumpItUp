@@ -28,12 +28,11 @@
 }
 
 .song-item {
-  padding: 15px;
+  padding: 10px;
   margin: 5px 0;
-  background: rgba(34, 34, 34, 0.8);
-  border-radius: 5px;
+  border: 2px solid transparent;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
 }
 
 .song-item:hover {
@@ -41,8 +40,9 @@
 }
 
 .song-item.selected {
-  background: rgba(68, 68, 68, 0.9);
-  border-left: 4px solid #ff0;
+  border-color: #ff0066;
+  background-color: rgba(255, 0, 102, 0.1);
+  transform: scale(1.02);
 }
 
 .song-item h3 {

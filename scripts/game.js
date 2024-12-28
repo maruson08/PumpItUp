@@ -72,25 +72,26 @@ function calculateOverlap(marker, fallingArrow) {
 
 // Game over 함수 수정
 function updateHP(change) {
-  hp += change;
-  hp = Math.max(0, Math.min(100, hp)); // Keep HP between 0 and 100
+  return;
+  // hp += change;
+  // hp = Math.max(0, Math.min(100, hp)); // Keep HP between 0 and 100
 
-  // Update HP text and bar
-  $("#HP").text(hp);
-  $("#hp-bar").css("width", `${hp}%`);
+  // // Update HP text and bar
+  // $("#HP").text(hp);
+  // $("#hp-bar").css("width", `${hp}%`);
 
-  // Change bar color based on HP level
-  if (hp < 30) {
-    $("#hp-bar").css("background", "linear-gradient(90deg, #ff0000, #ff3300)");
-  } else if (hp < 60) {
-    $("#hp-bar").css("background", "linear-gradient(90deg, #ff3300, #ff9900)");
-  } else {
-    $("#hp-bar").css("background", "linear-gradient(90deg, #ff9900, #ffff00)");
-  }
+  // // Change bar color based on HP level
+  // if (hp < 30) {
+  //   $("#hp-bar").css("background", "linear-gradient(90deg, #ff0000, #ff3300)");
+  // } else if (hp < 60) {
+  //   $("#hp-bar").css("background", "linear-gradient(90deg, #ff3300, #ff9900)");
+  // } else {
+  //   $("#hp-bar").css("background", "linear-gradient(90deg, #ff9900, #ffff00)");
+  // }
 
-  if (hp <= 0) {
-    goToFinish("Game Over!");
-  }
+  // if (hp <= 0) {
+  //   goToFinish("Game Over!");
+  // }
 }
 
 // 게임 종료 처리 함수
@@ -153,7 +154,7 @@ function handleMissedArrow(arrow) {
 
   // 판정 구간을 완전히 지나간 경우에만 미스 처리
   if (timingDiff < -80) {
-    updateHP(-20);
+    updateHP(0);
     showJudgment("MISS", arrow[0]);
     updateCombo(false);
     miss++;
@@ -236,13 +237,14 @@ function judgeArrow(arrowType) {
     good++;
     console.log("GOOD");
   } else if (minDiff < 80) {
-    updateHP(-5);
+    updateHP(0);
     showJudgment("BAD", closestArrow[0]);
     updateCombo(false);
     bad++;
     console.log("BAD");
   } else {
-    updateHP(-10);
+    3;
+    updateHP(0);
     showJudgment("MISS", closestArrow[0]);
     updateCombo(false);
     miss++;
@@ -257,7 +259,7 @@ function judgeArrow(arrowType) {
   arrowMonitors.delete(arrowId);
   closestArrow.remove();
 }
-
+333313333333333333;
 // 키보드 이벤트 리스너에 마커 활성화 기능만 유지
 $(document).keydown(function (event) {
   const arrowType = keyMap[event.key];
@@ -289,11 +291,11 @@ window.addEventListener("beforeunload", () => {
 
 // Key mapping
 const keyMap = {
-  7: "ul",
-  1: "dl",
+  1: "ul",
+  7: "dl",
   5: "center", // Space key
-  9: "ur",
-  3: "dr",
+  3: "ur",
+  9: "dr",
 };
 
 // Add keyboard event listener - 이전 버전으로 복원
