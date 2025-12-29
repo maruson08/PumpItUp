@@ -147,7 +147,7 @@ body {
 }
 
 #game-content {
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 48px auto;
   padding: 28px;
 }
@@ -169,9 +169,20 @@ body {
 
 #song-select {
   display: grid;
-  grid-template-columns: 1fr 640px;
-  gap: 24px;
+  grid-template-columns: 1fr 640px 260px;
+  gap: 20px;
   align-items: start;
+}
+
+.ranking-board {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: var(--soft-shadow);
+  height: fit-content;
+  max-height: 66vh;
+  overflow-y: auto;
 }
 .song-list {
   max-height: 66vh;
@@ -302,13 +313,20 @@ footer {
   transform: translateX(-50%);
   bottom: 18px;
   padding: 10px 18px;
-  border-radius: 999px;
   background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.04);
   color: var(--muted);
   font-size: 0.92rem;
-  box-shadow: var(--soft-shadow);
   text-align: center;
+}
+
+@media (max-width: 1000px) {
+  #song-select {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ranking-board {
+    grid-column: 2;
+    grid-row: 2;
+  }
 }
 
 @media (max-width: 900px) {
@@ -316,10 +334,16 @@ footer {
     grid-template-columns: 1fr;
   }
   .song-preview {
+    order: 1;
+  }
+  .ranking-board {
+    grid-column: 1;
+    grid-row: auto;
     order: 2;
   }
   .song-list {
-    order: 1;
+    order: 3;
+    max-height: 40vh;
   }
   #game-content {
     padding: 18px;
@@ -337,4 +361,35 @@ footer {
   #song-preview-frame {
     max-height: 40vh;
   }
+}
+
+/* Ranking List Styles */
+#main-rank-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+#main-rank-list li:last-child {
+  border-bottom: none;
+}
+.rank-num {
+  font-weight: bold;
+  color: #10b981;
+  width: 30px;
+}
+.rank-name {
+  flex-grow: 1;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+.rank-score {
+  font-weight: bold;
+  color: #2563eb;
 }

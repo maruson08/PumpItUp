@@ -61,6 +61,7 @@ function updateHP(amount) {
 }
 }
 function goToFinish(reason = "CLEAR!") {
+  const selectedSong = JSON.parse(sessionStorage.getItem("selectedSong"));
   const params = new URLSearchParams({
     score,
     combo: maxCombo,
@@ -70,6 +71,8 @@ function goToFinish(reason = "CLEAR!") {
     bad,
     miss,
     reason,
+    songTitle: selectedSong ? selectedSong.title : "Unknown Song",
+    difficulty: currentDifficulty || "medium",
   });
   window.location.href = `finish.html?${params.toString()}`;
 }
@@ -162,7 +165,6 @@ function judgeArrow(arrowType) {
 
   if (!closestArrow || minDiff > 100) return;
 
-  // Find matching judgment rule
   const judgment = judgmentRules.find(
     (r) => minDiff >= r.minDiff && minDiff < r.maxDiff
   );
@@ -220,13 +222,6 @@ $(document).keyup(function (event) {
   const arrowType = keyMap[event.key];
   if (arrowType) {
     document.querySelector(`#${arrowType} .marker`)?.classList.remove("active");
-  }
-});
-
-document.addEventListener("keydown", (event) => {
-  const difficultyMap = { 1: "easy", 2: "medium", 3: "hard" };
-  if (difficultyMap[event.key]) {
-    setDifficulty(difficultyMap[event.key]);
   }
 });
 

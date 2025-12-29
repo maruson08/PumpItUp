@@ -5,7 +5,6 @@ class SongSelectManager {
     this.currentDifficultyIndex = 0;
     this.allSongsData = {};
     
-    this.handleKeyPress = this.handleKeyPress.bind(this);
     this.loadSongList = this.loadSongList.bind(this);
     
     this.init();
@@ -13,77 +12,49 @@ class SongSelectManager {
 
   async init() {
     await this.loadSongList();
-    document.addEventListener("keydown", this.handleKeyPress);
   }
 
-  handleKeyPress(event) {
-    if (this.isSelectingDifficulty) {
-      this.handleDifficultySelection(event);
-    } else {
-      this.handleSongSelection(event);
-    }
-  }
 
-  handleSongSelection(event) {
-    const songItems = document.querySelectorAll(".song-item");
-    if (songItems.length === 0) return;
-
-    switch (event.key) {
-      case "1":
-      case "7":
-        this.currentSongIndex = Math.max(0, this.currentSongIndex - 1);
-        this.updateSelectedSong(songItems);
-        break;
-      case "5":
-        if (this.currentSongIndex >= 0) {
-          const selectedSongElement = songItems[this.currentSongIndex];
-          const title = selectedSongElement.querySelector("h3").textContent;
-          const songData = this.allSongsData[title];
-          this.selectSong(title, songData);
-          this.isSelectingDifficulty = true;
-          this.currentDifficultyIndex = 0;
-          this.updateDifficultySelection();
-        }
-        break;
-      case "3":
-      case "9":
-        this.currentSongIndex = Math.min(songItems.length - 1, this.currentSongIndex + 1);
-        this.updateSelectedSong(songItems);
-        break;
-    }
-  }
-
-  handleDifficultySelection(event) {
-    const difficultyButtons = document.querySelectorAll(".difficulty-select button");
-
-    switch (event.key) {
-      case "1":
-      case "7":
-        this.isSelectingDifficulty = false;
-        difficultyButtons.forEach((btn) => btn.classList.remove("selected"));
-        break;
-      case "3":
-      case "9":
-        this.currentDifficultyIndex = (this.currentDifficultyIndex + 1) % difficultyButtons.length;
-        this.updateDifficultySelection();
-        break;
-      case "5":
-        const selectedButton = difficultyButtons[this.currentDifficultyIndex];
-        if (selectedButton) {
-          selectedButton.click();
-        }
-        break;
-    }
-  }
 
   updateSelectedSong(songItems) {
     songItems.forEach((item, index) => {
         if (index === this.currentSongIndex) {
             item.classList.add("selected");
-            item.scrollIntoView({ block: "center", behavior: "smooth" });
         } else {
             item.classList.remove("selected");
         }
+    });
+  }
+
+  updateRankingDisplay(title, difficulty = "easy") {
+    const rankKey = "pumpItUpRanks";
+    const allRanks = JSON.parse(localStorage.getItem(rankKey) || "{}");
+    const key = `${title}|${difficulty}`;
+    const songRanks = allRanks[key] || [];
+    
+    const rankList = document.getElementById("main-rank-list");
+    if (!rankList) return;
+
+    rankList.innerHTML = "";
+    
+    const boardTitle = document.querySelector("#ranking-board h3");
+    if (boardTitle) boardTitle.innerHTML = `Top 5 <br> ${title} [${difficulty.toUpperCase()}]`;
+
+    if (songRanks.length === 0) {
+      rankList.innerHTML = "<li style='text-align:center; color:#888;'>No records yet</li>";
+      return;
+    }
+
+    songRanks.sort((a, b) => b.score - a.score);
+    
+    songRanks.slice(0, 5).forEach((rank, index) => { 
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="rank-num">#${index + 1}</span>
+        <span class="rank-name">${rank.name}</span>
+        <span class="rank-score">${rank.score.toLocaleString()}</span>
+      `;
+      rankList.appendChild(li);
     });
   }
 
@@ -92,6 +63,14 @@ class SongSelectManager {
     difficultyButtons.forEach((button, index) => {
       if (index === this.currentDifficultyIndex) {
         button.classList.add("selected");
+        
+        // Update ranking when difficulty changes
+        const selectedSong = document.querySelector(".song-item.selected");
+        if (selectedSong) {
+            const songTitle = selectedSong.querySelector("h3").textContent;
+            const difficulty = button.dataset.difficulty;
+            this.updateRankingDisplay(songTitle, difficulty);
+        }
       } else {
         button.classList.remove("selected");
       }
@@ -119,6 +98,12 @@ class SongSelectManager {
 
       this.currentSongIndex = 0;
       this.updateSelectedSong(document.querySelectorAll(".song-item"));
+      
+      // Select first song initially to show rankings
+      const firstSongTitle = Object.keys(this.allSongsData)[0];
+      if (firstSongTitle) {
+         this.selectSong(firstSongTitle, this.allSongsData[firstSongTitle]);
+      }
 
       this.setupDifficultyButtons();
     } catch (error) {
@@ -129,6 +114,14 @@ class SongSelectManager {
   selectSong(title, songData) {
     const titleElem = document.getElementById("selected-song-title");
     if(titleElem) titleElem.textContent = title;
+
+    // Get current difficulty
+    const difficultyButtons = document.querySelectorAll(".difficulty-select button");
+    const currentDiffBtn = difficultyButtons[this.currentDifficultyIndex];
+    const difficulty = currentDiffBtn ? currentDiffBtn.dataset.difficulty : "easy";
+
+    // Update Rankings for this song
+    this.updateRankingDisplay(title, difficulty);
 
     const previewContainer = document.querySelector(".song-preview");
     let previewFrame = document.getElementById("song-preview-frame");
@@ -148,6 +141,13 @@ class SongSelectManager {
     }
 
     document.querySelector(".difficulty-select").style.display = "flex";
+    
+    // Show start button
+    const startBtn = document.getElementById("start-game-btn");
+    if(startBtn) {
+        startBtn.style.display = "block";
+        startBtn.onclick = () => this.startGame();
+    }
 
     const songItems = document.querySelectorAll(".song-item");
     this.currentSongIndex = Array.from(songItems).findIndex(
@@ -157,42 +157,52 @@ class SongSelectManager {
   }
 
   setupDifficultyButtons() {
-      document.querySelectorAll(".difficulty-select button").forEach((button) => {
+      document.querySelectorAll(".difficulty-select button").forEach((button, index) => {
         const newButton = button.cloneNode(true);
         button.parentNode.replaceChild(newButton, button);
         
         newButton.addEventListener("click", () => {
-          const selectedSong = document.querySelector(".song-item.selected");
-          if (!selectedSong) {
-            alert("Please select a song first!");
-            return;
-          }
-      
-          const songTitle = document.getElementById("selected-song-title").textContent;
-          const difficulty = newButton.dataset.difficulty;
-          const previewFrame = document.querySelector("#song-preview-frame");
-          let urlId = "";
-          
-          if(previewFrame && previewFrame.src) {
-              try {
-                  urlId = previewFrame.src.split("embed/")[1].split("?")[0];
-              } catch(e) {
-                  console.error("Error parsing URL", e);
-              }
-          }
-
-          sessionStorage.setItem(
-            "selectedSong",
-            JSON.stringify({
-              title: songTitle,
-              url: urlId,
-              difficulty: difficulty,
-            })
-          );
-      
-          window.location.href = "game.html";
+          // Update current index for keyboard sync
+          this.currentDifficultyIndex = index;
+          this.updateDifficultySelection(); // This will trigger rank update
         });
       });
+  }
+
+  startGame() {
+      const selectedSong = document.querySelector(".song-item.selected");
+      if (!selectedSong) {
+        alert("Please select a song first!");
+        return;
+      }
+  
+      const songTitle = document.getElementById("selected-song-title").textContent;
+      
+      const difficultyButtons = document.querySelectorAll(".difficulty-select button");
+      const currentDiffBtn = difficultyButtons[this.currentDifficultyIndex];
+      const difficulty = currentDiffBtn ? currentDiffBtn.dataset.difficulty : "medium";
+      
+      const previewFrame = document.querySelector("#song-preview-frame");
+      let urlId = "";
+      
+      if(previewFrame && previewFrame.src) {
+          try {
+              urlId = previewFrame.src.split("embed/")[1].split("?")[0];
+          } catch(e) {
+              console.error("Error parsing URL", e);
+          }
+      }
+
+      sessionStorage.setItem(
+        "selectedSong",
+        JSON.stringify({
+          title: songTitle,
+          url: urlId,
+          difficulty: difficulty,
+        })
+      );
+  
+      window.location.href = "game.html";
   }
 }
 

@@ -68,27 +68,144 @@
       <div class="combo">GOOD × <span id="GOOD">0</span></div>
       <div class="combo">BAD × <span id="BAD">0</span></div>
       <div class="combo">MISS × <span id="MISS">0</span></div>
-      <button onclick="location.href='game.html'">Try Again</button>
-      <button onclick="location.href='index.html'">Back to Menu</button>
+      
+      <div id="inputSection" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+        <input type="text" id="playerName" placeholder="Enter Name" style="padding: 10px; border-radius: 6px; border: 1px solid #ccc; width: 200px;">
+        <br>
+        <button onclick="saveRank()" style="background: #10b981; color: white;">Save Rank</button>
+        <button onclick="dontSaveRank()" style="background: #ef4444; color: white;">Don't Save</button>
+      </div>
+
+      <div id="rankSection" style="display: none; margin-top: 20px;">
+        <h2>Top 10 Rankings</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr style="background: #f8fafc;">
+              <th style="padding: 8px;">Rank</th>
+              <th style="padding: 8px;">Name</th>
+              <th style="padding: 8px;">Score</th>
+              <th style="padding: 8px;">Combo</th>
+              <th style="padding: 8px;">Date</th>
+            </tr>
+          </thead>
+          <tbody id="rankList">
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button onclick="location.href='game.html'">Try Again</button>
+        <button onclick="location.href='index.html'">Back to Menu</button>
+      </div>
     </div>
 
     <script>
-      // Get URL parameters
       const params = new URLSearchParams(window.location.search);
-      document.getElementById("finalScore").textContent =
-        params.get("score") || 0;
-      document.getElementById("maxCombo").textContent =
-        params.get("combo") || 0;
+      const score = parseInt(params.get("score")) || 0;
+      const maxCombo = parseInt(params.get("combo")) || 0;
+      
+      document.getElementById("finalScore").textContent = score;
+      document.getElementById("maxCombo").textContent = maxCombo;
 
-      document.getElementById("PERFECT").textContent =
-        params.get("perfect") || 0;
+      document.getElementById("PERFECT").textContent = params.get("perfect") || 0;
       document.getElementById("GREAT").textContent = params.get("great") || 0;
       document.getElementById("GOOD").textContent = params.get("good") || 0;
       document.getElementById("BAD").textContent = params.get("bad") || 0;
       document.getElementById("MISS").textContent = params.get("miss") || 0;
 
-      document.getElementById("reason").textContent =
-        params.get("reason") || "Game Finished";
+      document.getElementById("reason").textContent = params.get("reason") || "Game Finished";
+
+      document.getElementById("reason").textContent = params.get("reason") || "Game Finished";
+
+      const songTitle = params.get("songTitle") || "Unknown Song";
+      const difficulty = params.get("difficulty") || "medium";
+      
+      const rankKey = "pumpItUpRanks";
+
+      function getAllRanks() {
+        return JSON.parse(localStorage.getItem(rankKey) || "{}");
+      }
+
+      function getRanksKey(title, diff) {
+        return `${title}|${diff}`;
+      }
+
+      function getRanksForCurrentSong() {
+        const allRanks = getAllRanks();
+        return allRanks[getRanksKey(songTitle, difficulty)] || [];
+      }
+
+      function saveRank() {
+        const nameInput = document.getElementById("playerName");
+        const name = nameInput.value.trim() || "Anonymous";
+        
+        const newRank = {
+          name,
+          score,
+          combo: maxCombo,
+          date: new Date().toLocaleString()
+        };
+
+        const allRanks = getAllRanks();
+        const key = getRanksKey(songTitle, difficulty);
+        
+        if (!allRanks[key]) {
+            allRanks[key] = [];
+        }
+        
+        allRanks[key].push(newRank);
+        allRanks[key].sort((a, b) => b.score - a.score); 
+        
+        localStorage.setItem(rankKey, JSON.stringify(allRanks));
+        
+        document.getElementById("inputSection").style.display = "none";
+        displayRanks();
+      }
+
+      function dontSaveRank() {
+        document.getElementById("inputSection").style.display = "none";
+        displayRanks();
+      }
+
+      function displayRanks() {
+        const ranks = getRanksForCurrentSong();
+        const tbody = document.getElementById("rankList");
+        tbody.innerHTML = "";
+        
+        document.querySelector("#rankSection h2").textContent = `Top 10 - ${songTitle} [${difficulty.toUpperCase()}]`;
+
+        ranks.slice(0, 10).forEach((rank, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${rank.name}</td>
+            <td>${rank.score}</td>
+            <td>${rank.combo}</td>
+            <td>${rank.date}</td>
+          `;
+          tbody.appendChild(row);
+        });
+        
+        document.getElementById("rankSection").style.display = "block";
+      }
+
+      (function showEstimatedRank() {
+          const currentRanks = getRanksForCurrentSong();
+          const tempRank = { score: score }; 
+          const testList = [...currentRanks, tempRank];
+          testList.sort((a, b) => b.score - a.score);
+          
+          const myRankIndex = testList.indexOf(tempRank);
+          const myRank = myRankIndex + 1;
+          
+          const inputSection = document.getElementById("inputSection");
+          const rankDisplay = document.createElement("div");
+          rankDisplay.style.cssText = "font-size: 18px; color: #2563eb; margin-bottom: 10px; font-weight: bold;";
+          rankDisplay.textContent = `You achieved Rank #${myRank}!`;
+          
+          inputSection.insertBefore(rankDisplay, inputSection.firstChild);
+      })();
     </script>
+      
   </body>
 </html>
