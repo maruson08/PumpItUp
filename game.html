@@ -21,29 +21,26 @@
     ></iframe>
     <gameContainer>
       <infoBar>
-        <p
-          id="difficulty"
-          title="Press 4:Easy, 2:Normal, 8:Hard to change difficulty"
-        >
-          Difficulty: MEDIUM
-        </p>
-        <p id="score">0</p>
-        <p id="combo">COMBO: 0</p>
-        <div class="hp-container">
-          <div id="hp-bar"></div>
-          <span id="HP">100</span>
+        <div class="info-stat" id="difficulty">
+          <span class="info-stat-label">Difficulty</span>
+          <span class="info-stat-value">MEDIUM</span>
         </div>
-        <a
-          href="index.html"
-          style="
-            background-color: aliceblue;
-            color: black;
-            text-decoration: none;
-            padding: 1%;
-            border-radius: 10px;
-          "
-          >Home</a
-        >
+        <div class="info-stat" id="score">
+          <span class="info-stat-label">Score</span>
+          <span class="info-stat-value">0</span>
+        </div>
+        <div class="info-stat" id="combo">
+          <span class="info-stat-label">Combo</span>
+          <span class="info-stat-value">0</span>
+        </div>
+        <div class="hp-container">
+          <span class="hp-label">HP</span>
+          <div id="hp-bar-container">
+            <div id="hp-bar"></div>
+            <span id="HP">100</span>
+          </div>
+        </div>
+        <a href="index.html" class="home-btn">Home</a>
       </infoBar>
       <arrows>
         <div></div>

@@ -45,21 +45,6 @@ function setDifficulty(difficulty) {
     difficulty.toUpperCase();
 }
 
-function updateHP(amount) {
-  if (amount < 0) {
-    if (currentDifficulty === "easy") amount *= 0.6;
-    else if (currentDifficulty === "hard") amount *= 1.6;
-  }
-  hp += amount;
-  if (hp > 100) hp = 100;
-  if (hp <= 0) {
-    hp = 0;
-    goToFinish("GAME OVER");
-  } else {
-    document.getElementById("hp-bar").style.width = `${hp}%`;
-    document.getElementById("HP").textContent = Math.ceil(hp);
-}
-}
 function goToFinish(reason = "CLEAR!") {
   const params = new URLSearchParams({
     score,
@@ -114,7 +99,6 @@ function handleMissedArrow(arrow) {
   if (timingDiff < -80) {
     showJudgment("MISS", arrow[0]);
     updateCombo(false);
-    updateHP(judgmentRules.find((r) => r.type === "MISS").hp);
     miss++;
     arrow.remove();
     return true;
@@ -169,26 +153,9 @@ function judgeArrow(arrowType) {
   if (!judgment) return;
 
   score += judgment.score;
-  updateHP(judgment.hp);
   showJudgment(judgment.type, closestArrow);
   updateCombo(judgment.type !== "MISS" && judgment.type !== "BAD");
-  switch (judgment.type) {
-    case "PERFECT":
-      perfect++;
-      break;
-    case "GREAT":
-      great++;
-      break;
-    case "GOOD":
-      good++;
-      break;
-    case "BAD":
-      bad++;
-      break;
-    case "MISS":
-      miss++;
-      break;
-  }
+  window[judgmentCounts[judgment.type]]++;
 
   document.querySelector("#score .info-stat-value").textContent = score;
 
@@ -200,15 +167,18 @@ function judgeArrow(arrowType) {
   closestArrow.remove();
 }
 
+// Keyboard event listeners
 $(document).keydown(function (event) {
   const arrowType = keyMap[event.key];
   if (!arrowType) return;
 
   event.preventDefault();
 
+  // Handle arrow marker active state
   const marker = document.querySelector(`#${arrowType} .marker`);
   marker?.classList.add("active");
 
+  // Prevent multiple keypresses within 100ms
   const currentTime = Date.now();
   if (currentTime - (lastKeyPressTime[arrowType] || 0) >= 100) {
     lastKeyPressTime[arrowType] = currentTime;
@@ -223,6 +193,7 @@ $(document).keyup(function (event) {
   }
 });
 
+// Difficulty setting with keyboard (1, 2, 3)
 document.addEventListener("keydown", (event) => {
   const difficultyMap = { 1: "easy", 2: "medium", 3: "hard" };
   if (difficultyMap[event.key]) {
@@ -230,10 +201,12 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+// Cleanup on page unload
 window.addEventListener("beforeunload", () => {
   arrowMonitors.forEach((interval) => clearInterval(interval));
 });
 
+// Main game initialization
 document.addEventListener("DOMContentLoaded", async () => {
   const selectedSong = JSON.parse(sessionStorage.getItem("selectedSong"));
 
@@ -251,15 +224,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       throw new Error("Song data not found");
     }
 
+    // Set up YouTube iframe
     document.getElementById(
       "myVideo"
     ).src = `https://www.youtube.com/embed/${selectedSong.url}?autoplay=1&controls=0`;
 
+    // Set difficulty
     setDifficulty(selectedSong.difficulty);
-    Object.keys(keyMap).forEach((key) => {
-      $(`#${keyMap[key]}`).find(".fallingArrows").remove();
-    });
 
+    // Create arrows based on sheet data
     Object.entries(songData.sheet).forEach(([time, arrows]) => {
       const seconds = parseFloat(time);
       if (isNaN(seconds)) return;
@@ -267,20 +240,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       setTimeout(() => {
         arrows.forEach((arrowType) => {
           const id = `arrow_${beat++}`;
-          const arrow = $(`<img class="fallingArrows" id="${id}" 
-            data-type="${arrowType}" src="Assets/${arrowType.toUpperCase()}.png" 
-            width="70%">`);
+          const arrow = document.createElement("img");
+          arrow.id = id;
+          arrow.className = "fallingArrows";
+          arrow.dataset.type = arrowType;
+          arrow.src = `Assets/${arrowType.toUpperCase()}.png`;
+          arrow.width = "70%";
 
-          arrow.on("animationend", function () {
+          arrow.addEventListener("animationend", function () {
+            showJudgment("MISS", this);
+            updateCombo(false);
+            miss++;
             removeArrow($(this));
           });
 
-          $(`#${arrowType}`).append(arrow);
+          document.getElementById(arrowType).appendChild(arrow);
           startArrowMonitoring(id, arrowType);
         });
-      }, Math.max(0, seconds * 1000 - 300));
+      }, seconds * 1000);
     });
 
+    // End song timer
     setTimeout(() => {
       goToFinish();
     }, songData.duration * 1000 + 5000);
