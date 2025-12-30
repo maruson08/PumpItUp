@@ -58,7 +58,7 @@ function updateHP(amount) {
   } else {
     document.getElementById("hp-bar").style.width = `${hp}%`;
     document.getElementById("HP").textContent = Math.ceil(hp);
-}
+  }
 }
 function goToFinish(reason = "CLEAR!") {
   const selectedSong = JSON.parse(sessionStorage.getItem("selectedSong"));
@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           $(`#${arrowType}`).append(arrow);
           startArrowMonitoring(id, arrowType);
         });
-      }, Math.max(0, seconds * 1000 - 300));
+      }, Math.max(0, seconds * 1000 + 2000));
     });
 
     setTimeout(() => {

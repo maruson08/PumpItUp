@@ -14,7 +14,7 @@
       <div class="particles"></div>
     </div>
     <div id="intro-animation" class="fullscreen">
-      <img src="assets/logo.png" alt="Pump It Up Logo" class="logo" />
+      <img src="Assets/logo.png" alt="Pump It Up Logo" class="logo" />
       <div class="loading-bar"></div>
     </div>
 
@@ -22,8 +22,7 @@
       <h1>Pump It Up</h1>
 
       <div id="song-select">
-        <div class="song-list">
-        </div>
+        <div class="song-list"></div>
         <div class="song-preview">
           <div class="song-info">
             <h2 id="selected-song-title">No Song Selected</h2>
@@ -35,13 +34,44 @@
             <button data-difficulty="normal">Normal</button>
             <button data-difficulty="hard">Hard</button>
           </div>
-          <button id="start-game-btn" class="start-btn" style="margin-top: 15px; padding: 12px 30px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; display: none;">START GAME</button>
+          <button
+            id="start-game-btn"
+            class="start-btn"
+            style="
+              margin-top: 15px;
+              padding: 12px 30px;
+              font-size: 20px;
+              font-weight: bold;
+              background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+              color: white;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+              width: 100%;
+              display: none;
+            "
+          >
+            START GAME
+          </button>
         </div>
 
         <div id="ranking-board" class="ranking-board">
-          <h3 style="margin: 0 0 10px 0; color: #333; font-size: 18px; border-bottom: 2px solid #7d8180; padding-bottom: 5px;">🏆 Top 5 Rankings</h3>
-          <ul id="main-rank-list" style="list-style: none; padding: 0; margin: 0;">
-          </ul>
+          <h3
+            style="
+              margin: 0 0 10px 0;
+              color: #333;
+              font-size: 18px;
+              border-bottom: 2px solid #7d8180;
+              padding-bottom: 5px;
+            "
+          >
+            🏆 Top 5 Rankings
+          </h3>
+          <ul
+            id="main-rank-list"
+            style="list-style: none; padding: 0; margin: 0"
+          ></ul>
         </div>
       </div>
 
